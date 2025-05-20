@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3 под подозрением</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .game-area {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .new-game-container {
+            margin: 15px 0;
+        }
+        #new-game-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #new-game-btn:hover {
+            background-color: #2980b9;
+        }
+        .settings {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f0f8ff;
+            border-radius: 8px;
+        }
+        .settings-row {
+            margin: 10px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .settings-row label {
+            margin-right: 10px;
+            font-weight: bold;
+            min-width: 150px;
+            text-align: right;
+        }
+        .settings-row select {
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            min-width: 60px;
+        }
+        .emoji-grid-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin: 20px 0;
+        }
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 70px);
+            justify-content: center;
+            gap: 10px;
+        }
+        .emoji-option {
+            font-size: 2em;
+            cursor: pointer;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            transition: all 0.2s;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+        .emoji-option:hover {
+            background-color: #f0f0f0;
+            transform: scale(1.1);
+        }
+        .emoji-option.selected {
+            border-color: #4CAF50;
+            background-color: #e8f5e9;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        #guess-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #guess-btn:hover {
+            background-color: #45a049;
+        }
+        #guess-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .message {
+            font-size: 1.2em;
+            margin: 20px 0;
+            min-height: 30px;
+        }
+        .success {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .failure {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .stats {
+            margin-top: 20px;
+            font-size: 1.1em;
+        }
+        .selection {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .selection-slot {
+            width: 60px;
+            height: 60px;
+            border: 2px dashed #aaa;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            box-sizing: border-box;
+        }
+        .history {
+            margin-top: 30px;
+            text-align: left;
+        }
+        .history h3 {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        .attempt-history {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+            padding: 5px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .attempt-number {
+            font-weight: bold;
+            margin-right: 10px;
+            min-width: 20px;
+        }
+        .attempt-emojis {
+            display: flex;
+            gap: 5px;
+            margin-right: 15px;
+        }
+        .attempt-emojis span {
+            font-size: 1.5em;
+        }
+        .attempt-result {
+            margin-left: auto;
+            color: #2c3e50;
+        }
+        
+        @media (max-width: 480px) {
+            .game-area {
+                padding: 15px;
+            }
+            .settings-row label {
+                min-width: 120px;
+                text-align: left;
+                margin-bottom: 5px;
+            }
+            .emoji-grid {
+                grid-template-columns: repeat(4, 60px);
+                gap: 8px;
+            }
+            .emoji-option {
+                width: 50px;
+                height: 50px;
+                font-size: 1.8em;
+            }
+            .selection-slot {
+                width: 50px;
+                height: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-area">
+        <h1>3 под подозрением</h1>
+        <div class="new-game-container">
+            <button id="new-game-btn">Новая игра</button>
+        </div>
+        
+        <div class="settings">
+            <div class="settings-row">
+                <label for="total-characters">Персонажей в игре:</label>
+                <select id="total-characters">
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                </select>
+            </div>
+            <div class="settings-row">
+                <label for="guess-count">Угадать персонажей:</label>
+                <select id="guess-count">
+                    <option value="2">2</option>
+                    <option value="3" selected>3</option>
+                    <option value="4">4</option>
+                </select>
+            </div>
+            <div class="settings-row">
+                <label for="max-attempts">Количество попыток:</label>
+                <select id="max-attempts">
+                    <option value="6">6</option>
+                    <option value="8" selected>8</option>
+                    <option value="10">10</option>
+                    <option value="12">12</option>
+                </select>
+            </div>
+        </div>
+        
+        <p>Угадайте <span id="guess-count-display">3</span> загаданных смайлика. У вас <span id="max-attempts-display">8</span> попыток!</p>
+        
+        <div class="selection" id="selection-area">
+            <div class="selection-slot" id="slot0">?</div>
+            <div class="selection-slot" id="slot1">?</div>
+            <div class="selection-slot" id="slot2">?</div>
+        </div>
+        
+        <div class="emoji-grid-container">
+            <div class="emoji-grid" id="emoji-grid"></div>
+        </div>
+        
+        <div class="controls">
+            <button id="guess-btn" disabled>Проверить</button>
+        </div>
+        
+        <div class="message" id="message"></div>
+        
+        <div class="stats">
+            Попыток: <span id="attempts">0</span>/<span id="max-attempts-span">8</span> | 
+            Угадано: <span id="guessed">0</span>/<span id="to-guess">3</span>
+        </div>
+        
+        <div class="history">
+            <h3>История попыток:</h3>
+            <div id="history-container"></div>
+        </div>
+    </div>
+
+    <script>
+        const ALL_EMOJIS = ["😀", "😎", "🤖", "👻", "🐶", "🦄", "🐲", "🦊", "🐱", "🦁", "🐯", "🐮"];
+        
+        let secretCharacters = [];
+        let attempts = 0;
+        let guessed = 0;
+        let currentSlot = 0;
+        let selectedEmojis = [];
+        let gameHistory = [];
+        let gameOver = false;
+        let totalCharacters = 12;
+        let charactersToGuess = 3;
+        let maxAttempts = 8;
+        
+        const guessBtn = document.getElementById('guess-btn');
+        const newGameBtn = document.getElementById('new-game-btn');
+        const messageDiv = document.getElementById('message');
+        const attemptsSpan = document.getElementById('attempts');
+        const maxAttemptsSpan = document.getElementById('max-attempts-span');
+        const guessedSpan = document.getElementById('guessed');
+        const toGuessSpan = document.getElementById('to-guess');
+        const historyContainer = document.getElementById('history-container');
+        const emojiGrid = document.getElementById('emoji-grid');
+        const selectionArea = document.getElementById('selection-area');
+        const totalCharactersSelect = document.getElementById('total-characters');
+        const guessCountSelect = document.getElementById('guess-count');
+        const maxAttemptsSelect = document.getElementById('max-attempts');
+        const guessCountDisplay = document.getElementById('guess-count-display');
+        const maxAttemptsDisplay = document.getElementById('max-attempts-display');
+        
+        function newGame() {
+            totalCharacters = parseInt(totalCharactersSelect.value);
+            charactersToGuess = parseInt(guessCountSelect.value);
+            maxAttempts = parseInt(maxAttemptsSelect.value);
+            
+            guessCountDisplay.textContent = charactersToGuess;
+            maxAttemptsDisplay.textContent = maxAttempts;
+            maxAttemptsSpan.textContent = maxAttempts;
+            toGuessSpan.textContent = charactersToGuess;
+            
+            const availableEmojis = [...ALL_EMOJIS];
+            secretCharacters = [];
+            
+            for (let i = 0; i < charactersToGuess; i++) {
+                const randomIndex = Math.floor(Math.random() * availableEmojis.length);
+                secretCharacters.push(availableEmojis[randomIndex]);
+                availableEmojis.splice(randomIndex, 1);
+            }
+            
+            const emojisToShow = [...secretCharacters];
+            while (emojisToShow.length < totalCharacters && availableEmojis.length > 0) {
+                const randomIndex = Math.floor(Math.random() * availableEmojis.length);
+                emojisToShow.push(availableEmojis[randomIndex]);
+                availableEmojis.splice(randomIndex, 1);
+            }
+            
+            for (let i = emojisToShow.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [emojisToShow[i], emojisToShow[j]] = [emojisToShow[j], emojisToShow[i]];
+            }
+            
+            updateEmojiGrid(emojisToShow);
+            updateSelectionSlots();
+            
+            attempts = 0;
+            guessed = 0;
+            currentSlot = 0;
+            selectedEmojis = [];
+            gameHistory = [];
+            gameOver = false;
+            
+            clearSlots();
+            
+            guessBtn.disabled = true;
+            messageDiv.textContent = '';
+            messageDiv.className = 'message';
+            attemptsSpan.textContent = attempts;
+            guessedSpan.textContent = guessed;
+            historyContainer.innerHTML = '';
+            
+            console.log('Загаданы:', secretCharacters);
+        }
+        
+        function updateEmojiGrid(emojis) {
+            emojiGrid.innerHTML = '';
+            
+            emojis.forEach(emoji => {
+                const emojiOption = document.createElement('div');
+                emojiOption.className = 'emoji-option';
+                emojiOption.textContent = emoji;
+                emojiOption.onclick = () => selectEmoji(emoji);
+                emojiGrid.appendChild(emojiOption);
+            });
+        }
+        
+        function updateSelectionSlots() {
+            selectionArea.innerHTML = '';
+            for (let i = 0; i < charactersToGuess; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'selection-slot';
+                slot.id = `slot${i}`;
+                slot.textContent = '?';
+                selectionArea.appendChild(slot);
+            }
+        }
+        
+        function clearSlots() {
+            const slots = document.querySelectorAll('.selection-slot');
+            slots.forEach(slot => {
+                slot.textContent = '?';
+                slot.style.border = '2px dashed #aaa';
+                slot.style.backgroundColor = 'transparent';
+            });
+        }
+        
+        function getCurrentSlots() {
+            return document.querySelectorAll('.selection-slot');
+        }
+        
+        function selectEmoji(emoji) {
+            if (currentSlot >= charactersToGuess || gameOver) return;
+            
+            if (selectedEmojis.includes(emoji)) {
+                showMessage('Вы уже выбрали этот смайлик!', 'failure');
+                return;
+            }
+            
+            selectedEmojis[currentSlot] = emoji;
+            const slots = getCurrentSlots();
+            slots[currentSlot].textContent = emoji;
+            slots[currentSlot].style.border = '2px solid #4CAF50';
+            slots[currentSlot].style.backgroundColor = '#e8f5e9';
+            
+            currentSlot++;
+            clearMessage();
+            
+            if (currentSlot === charactersToGuess) {
+                guessBtn.disabled = false;
+            }
+        }
+        
+        function checkGuess() {
+            if (gameOver) return;
+            
+            attempts++;
+            attemptsSpan.textContent = attempts;
+            
+            let correct = 0;
+            for (const emoji of selectedEmojis) {
+                if (secretCharacters.includes(emoji)) {
+                    correct++;
+                }
+            }
+            
+            guessed = correct;
+            guessedSpan.textContent = guessed;
+            
+            addToHistory(selectedEmojis, correct);
+            
+            if (correct === charactersToGuess) {
+                showMessage('Поздравляем! Вы угадали всех персонажей!', 'success');
+                endGame();
+            } else if (attempts >= maxAttempts) {
+                showMessage(`Игра окончена! Загаданные смайлики: ${secretCharacters.join(' ')}`, 'failure');
+                endGame();
+            } else {
+                showMessage(`Угадано смайликов: ${correct}`, 'message');
+                
+                currentSlot = 0;
+                selectedEmojis = [];
+                setTimeout(() => {
+                    clearSlots();
+                    guessBtn.disabled = true;
+                }, 500);
+            }
+        }
+        
+        function addToHistory(emojis, correct) {
+            const attemptDiv = document.createElement('div');
+            attemptDiv.className = 'attempt-history';
+            
+            const emojisHTML = emojis.map(emoji => `<span>${emoji}</span>`).join('');
+            
+            attemptDiv.innerHTML = `
+                <div class="attempt-number">${attempts}</div>
+                <div class="attempt-emojis">${emojisHTML}</div>
+                <div class="attempt-result">Угадано: ${correct}</div>
+            `;
+            
+            historyContainer.prepend(attemptDiv);
+            gameHistory.unshift({attempt: attempts, emojis: [...emojis], correct: correct});
+        }
+        
+        function showMessage(text, type) {
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+        }
+        
+        function clearMessage() {
+            messageDiv.textContent = '';
+            messageDiv.className = 'message';
+        }
+        
+        function endGame() {
+            gameOver = true;
+            guessBtn.disabled = true;
+        }
+        
+        guessBtn.addEventListener('click', checkGuess);
+        newGameBtn.addEventListener('click', newGame);
+        totalCharactersSelect.addEventListener('change', function() {
+            if (parseInt(this.value) < parseInt(guessCountSelect.value)) {
+                guessCountSelect.value = this.value;
+            }
+            newGame();
+        });
+        guessCountSelect.addEventListener('change', function() {
+            if (parseInt(this.value) > parseInt(totalCharactersSelect.value)) {
+                totalCharactersSelect.value = this.value;
+            }
+            newGame();
+        });
+        maxAttemptsSelect.addEventListener('change', newGame);
+        
+        window.addEventListener('load', newGame);
+    </script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eelay Miracle Studio</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #fff;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeIn 1s ease-in-out;
+        }
+        
+        .logo {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(to right, #ff8a00, #e52e71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+        
+        .games-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        .game-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.3);
+            background: rgba(255, 255, 255, 0.25);
+        }
+        
+        .game-title {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            color: white;
+            text-align: center;
+        }
+        
+        .game-description {
+            font-size: 1em;
+            opacity: 0.9;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .play-btn {
+            background: linear-gradient(to right, #00c6ff, #0072ff);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 198, 255, 0.3);
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .play-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 198, 255, 0.4);
+        }
+        
+        .decorations {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .rectangle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.05);
+            transform: rotate(45deg);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2.2em;
+            }
+            
+            .game-card {
+                padding: 20px;
+            }
+            
+            .game-title {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="decorations" id="decorations"></div>
+    
+    <div class="header">
+        <div class="logo">Eelay Miracle Studio</div>
+        <div class="subtitle">Potencial Pro +</div>
+    </div>
+    
+    <div class="games-container">
+        <div class="game-card" onclick="window.open('3podpod.html', '_blank')">
+            <h2 class="game-title">3 под подозрением</h2>
+            <p class="game-description">
+                Угадайте скрытые смайлики за ограниченное число попыток.
+                Развивайте логику и внимание в этой увлекательной игре!
+            </p>
+            <button class="play-btn">Играть</button>
+        </div>
+        
+        <div class="game-card" onclick="window.open('SmileGame.html', '_blank')">
+            <h2 class="game-title">Математика со смайликами</h2>
+            <p class="game-description">
+                Решайте математические уравнения, где числа заменены смайликами.
+                Отличный способ потренировать математические навыки!
+            </p>
+            <button class="play-btn">Играть</button>
+        </div>
+    </div>
+
+    <script>
+        // Создаем декоративные элементы
+        const decorations = document.getElementById('decorations');
+        const colors = ['rgba(255,255,255,0.1)', 'rgba(255,255,255,0.05)', 'rgba(255,255,255,0.07)'];
+        
+        // Создаем круги
+        for (let i = 0; i < 10; i++) {
+            const circle = document.createElement('div');
+            circle.className = 'circle';
+            
+            const size = Math.random() * 200 + 50;
+            const posX = Math.random() * 100;
+            const posY = Math.random() * 100;
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            
+            circle.style.width = `${size}px`;
+            circle.style.height = `${size}px`;
+            circle.style.left = `${posX}%`;
+            circle.style.top = `${posY}%`;
+            circle.style.background = color;
+            circle.style.opacity = Math.random() * 0.5 + 0.1;
+            
+            decorations.appendChild(circle);
+        }
+        
+        // Создаем прямоугольники
+        for (let i = 0; i < 5; i++) {
+            const rect = document.createElement('div');
+            rect.className = 'rectangle';
+            
+            const width = Math.random() * 150 + 50;
+            const height = Math.random() * 50 + 20;
+            const posX = Math.random() * 100;
+            const posY = Math.random() * 100;
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            
+            rect.style.width = `${width}px`;
+            rect.style.height = `${height}px`;
+            rect.style.left = `${posX}%`;
+            rect.style.top = `${posY}%`;
+            rect.style.background = color;
+            rect.style.opacity = Math.random() * 0.3 + 0.1;
+            
+            decorations.appendChild(rect);
+        }
+    </script>
+</body>
+</html>
