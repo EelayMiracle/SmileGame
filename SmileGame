@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Математика со смайликами</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .game-area {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .mode-selection {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .mode-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .mode-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        .settings {
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #f0f8ff;
+            border-radius: 8px;
+            text-align: left;
+        }
+        .settings-row {
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .settings-row label {
+            font-weight: bold;
+            min-width: 250px;
+            margin-right: 15px;
+        }
+        .settings-row input, .settings-row select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            min-width: 80px;
+        }
+        .equation {
+            font-size: 2.5em;
+            margin: 30px 0;
+            min-height: 60px;
+        }
+        .numbers-grid {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        .number-box {
+            width: 80px;
+            height: 80px;
+            border: 3px solid #3498db;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            background-color: white;
+        }
+        .number-box:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .number-box.selected {
+            background-color: #e8f5e9;
+            border-color: #4CAF50;
+            color: #2e7d32;
+        }
+        .controls {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .action-btn {
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .check-btn {
+            background-color: #4CAF50;
+        }
+        .check-btn:hover {
+            background-color: #45a049;
+        }
+        .check-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .new-game-btn {
+            background-color: #3498db;
+        }
+        .new-game-btn:hover {
+            background-color: #2980b9;
+        }
+        .back-btn {
+            background-color: #e74c3c;
+        }
+        .back-btn:hover {
+            background-color: #c0392b;
+        }
+        .message {
+            font-size: 1.5em;
+            margin: 20px 0;
+            min-height: 40px;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 2px solid #4CAF50;
+        }
+        .failure {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 2px solid #ef5350;
+        }
+        .history {
+            margin-top: 40px;
+            text-align: left;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .history h3 {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .attempt-history {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: white;
+        }
+        .attempt-number {
+            font-weight: bold;
+            margin-right: 15px;
+            min-width: 30px;
+        }
+        .attempt-numbers {
+            display: flex;
+            gap: 10px;
+            margin-right: 20px;
+            flex-wrap: wrap;
+        }
+        .attempt-numbers span {
+            font-size: 1.5em;
+            padding: 5px 10px;
+            border-radius: 5px;
+            background-color: #f0f0f0;
+        }
+        .attempt-result {
+            margin-left: auto;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 600px) {
+            .settings-row label {
+                min-width: 100%;
+                margin-bottom: 8px;
+            }
+            .number-box {
+                width: 60px;
+                height: 60px;
+                font-size: 1.8em;
+            }
+            .equation {
+                font-size: 2em;
+            }
+            .controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .action-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-area">
+        <h1>Математика со смайликами</h1>
+        
+        <div id="mode-selection-screen">
+            <h2>Выберите тип задания:</h2>
+            <div class="mode-selection">
+                <button class="mode-btn" data-mode="add2">🌝 + 🙂</button>
+                <button class="mode-btn" data-mode="sub2">🌝 - 🙂</button>
+                <button class="mode-btn" data-mode="add3">🌝 + 🙂 + 😉</button>
+                <button class="mode-btn" data-mode="sub3">🌝 - 🙂 - 😉</button>
+                <button class="mode-btn" data-mode="mult_add">🌝 × 🙂 + 😉</button>
+                <button class="mode-btn" data-mode="mult_sub">🌝 × 🙂 - 😉</button>
+                <button class="mode-btn" data-mode="div_add">🌝 ÷ 🙂 + 😉</button>
+                <button class="mode-btn" data-mode="div_sub">🌝 ÷ 🙂 - 😉</button>
+            </div>
+        </div>
+        
+        <div id="game-screen" style="display: none;">
+            <div class="settings">
+                <div class="settings-row">
+                    <label for="min-value">Минимальное число:</label>
+                    <input type="number" id="min-value" min="1" max="100" value="1">
+                </div>
+                <div class="settings-row">
+                    <label for="max-value">Максимальное число:</label>
+                    <input type="number" id="max-value" min="10" max="1000" value="50">
+                </div>
+                <div class="settings-row">
+                    <label for="options-count">Количество вариантов ответа:</label>
+                    <select id="options-count">
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5" selected>5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button id="new-game-btn" class="action-btn new-game-btn">Новая игра</button>
+            
+            <div class="equation" id="equation-display"></div>
+            
+            <div class="numbers-grid" id="numbers-grid"></div>
+            
+            <div class="controls">
+                <button id="check-btn" class="action-btn check-btn" disabled>Проверить</button>
+                <button id="back-btn" class="action-btn back-btn">Назад к выбору</button>
+            </div>
+            
+            <div class="message" id="message"></div>
+            
+            <div class="history">
+                <h3>История попыток:</h3>
+                <div id="history-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Банк смайликов
+        const EMOJIS = ["🍧", "💎", "👑", "💖", "🎄", "🌸", "🎀", "⭐", "🎃", "🐟", "🎲", "🧩", "⛏️", "🔧", "💊"];
+        
+        // Переменные игры
+        let currentMode = '';
+        let correctNumbers = [];
+        let selectedNumbers = [];
+        let gameHistory = [];
+        let usedEmojis = [];
+        
+        // Элементы интерфейса
+        const modeSelectionScreen = document.getElementById('mode-selection-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const equationDisplay = document.getElementById('equation-display');
+        const numbersGrid = document.getElementById('numbers-grid');
+        const checkBtn = document.getElementById('check-btn');
+        const newGameBtn = document.getElementById('new-game-btn');
+        const backBtn = document.getElementById('back-btn');
+        const messageDiv = document.getElementById('message');
+        const historyContainer = document.getElementById('history-container');
+        const minValueInput = document.getElementById('min-value');
+        const maxValueInput = document.getElementById('max-value');
+        const optionsCountSelect = document.getElementById('options-count');
+        
+        // Обработчики событий
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                currentMode = this.getAttribute('data-mode');
+                startGame();
+            });
+        });
+        
+        newGameBtn.addEventListener('click', startGame);
+        backBtn.addEventListener('click', () => {
+            gameScreen.style.display = 'none';
+            modeSelectionScreen.style.display = 'block';
+        });
+        
+        checkBtn.addEventListener('click', checkAnswer);
+        
+        // Функция начала игры
+        function startGame() {
+            modeSelectionScreen.style.display = 'none';
+            gameScreen.style.display = 'block';
+            
+            const minValue = parseInt(minValueInput.value);
+            const maxValue = parseInt(maxValueInput.value);
+            const optionsCount = parseInt(optionsCountSelect.value);
+            
+            // Проверка корректности введенных значений
+            if (minValue >= maxValue) {
+                alert('Минимальное значение должно быть меньше максимального!');
+                return;
+            }
+            if (minValue < 1) {
+                alert('Минимальное значение должно быть не меньше 1!');
+                return;
+            }
+            
+            // Генерация случайных чисел
+            correctNumbers = generateNumbers(currentMode, minValue, maxValue);
+            const allNumbers = generateOptions(correctNumbers, optionsCount, minValue, maxValue);
+            
+            // Выбор случайных смайликов
+            usedEmojis = [];
+            const shuffledEmojis = [...EMOJIS].sort(() => Math.random() - 0.5);
+            
+            // Отображение уравнения
+            displayEquation(currentMode, correctNumbers, shuffledEmojis);
+            
+            // Отображение вариантов ответа
+            displayNumberOptions(allNumbers);
+            
+            // Сброс выбора
+            selectedNumbers = [];
+            checkBtn.disabled = true;
+            messageDiv.textContent = '';
+            messageDiv.className = 'message';
+        }
+        
+        // Генерация чисел для уравнения в зависимости от режима
+        function generateNumbers(mode, min, max) {
+            let a, b, c;
+            
+            switch(mode) {
+                case 'add2':
+                    a = getRandomInt(min, Math.floor(max / 2));
+                    b = getRandomInt(min, max - a);
+                    return [a, b, a + b];
+                
+                case 'sub2':
+                    b = getRandomInt(min, Math.floor(max / 2));
+                    a = getRandomInt(b + min, max);
+                    return [a, b, a - b];
+                
+                case 'add3':
+                    a = getRandomInt(min, Math.floor(max / 3));
+                    b = getRandomInt(min, Math.floor((max - a) / 2));
+                    c = getRandomInt(min, max - a - b);
+                    return [a, b, c, a + b + c];
+                
+                case 'sub3':
+                    b = getRandomInt(min, Math.floor(max / 3));
+                    c = getRandomInt(min, Math.floor((max - b) / 2));
+                    a = getRandomInt(b + c + min, max);
+                    return [a, b, c, a - b - c];
+                
+                case 'mult_add':
+                    a = getRandomInt(1, Math.floor(Math.sqrt(max)));
+                    b = getRandomInt(1, Math.floor((max - min) / a));
+                    c = getRandomInt(min, max - a * b);
+                    return [a, b, c, a * b + c];
+                
+                case 'mult_sub':
+                    a = getRandomInt(1, Math.floor(Math.sqrt(max)));
+                    b = getRandomInt(1, Math.floor((max - min) / a));
+                    c = getRandomInt(min, a * b - min);
+                    return [a, b, c, a * b - c];
+                
+                case 'div_add':
+                    b = getRandomInt(2, Math.floor(Math.sqrt(max)));
+                    a = b * getRandomInt(1, Math.floor((max - min) / b));
+                    c = getRandomInt(min, max - a / b);
+                    return [a, b, c, a / b + c];
+                
+                case 'div_sub':
+                    b = getRandomInt(2, Math.floor(Math.sqrt(max)));
+                    a = b * getRandomInt(2, Math.floor((max + min) / b));
+                    c = getRandomInt(min, a / b - min);
+                    return [a, b, c, a / b - c];
+                
+                default:
+                    return [];
+            }
+        }
+        
+        // Генерация вариантов ответа (правильные + случайные)
+        function generateOptions(correctNumbers, count, min, max) {
+            // Берем только числа, которые заменены смайликами (все кроме последнего - результата)
+            const correctOptions = correctNumbers.slice(0, -1);
+            let options = [...correctOptions];
+            
+            // Добавляем случайные числа (могут быть дубликаты)
+            while (options.length < count) {
+                const randomNum = getRandomInt(min, max);
+                options.push(randomNum);
+            }
+            
+            // Перемешиваем массив
+            return shuffleArray(options);
+        }
+        
+        // Отображение уравнения
+        function displayEquation(mode, numbers, emojis) {
+            let equation = '';
+            usedEmojis = [];
+            
+            switch(mode) {
+                case 'add2':
+                    equation = `${emojis[0]} + ${emojis[1]} = ${numbers[2]}`;
+                    usedEmojis = [emojis[0], emojis[1]];
+                    break;
+                
+                case 'sub2':
+                    equation = `${emojis[0]} - ${emojis[1]} = ${numbers[2]}`;
+                    usedEmojis = [emojis[0], emojis[1]];
+                    break;
+                
+                case 'add3':
+                    equation = `${emojis[0]} + ${emojis[1]} + ${emojis[2]} = ${numbers[3]}`;
+                    usedEmojis = [emojis[0], emojis[1], emojis[2]];
+                    break;
+                
+                case 'sub3':
+                    equation = `${emojis[0]} - ${emojis[1]} - ${emojis[2]} = ${numbers[3]}`;
+                    usedEmojis = [emojis[0], emojis[1], emojis[2]];
+                    break;
+                
+                case 'mult_add':
+                    equation = `${emojis[0]} × ${emojis[1]} + ${emojis[2]} = ${numbers[3]}`;
+                    usedEmojis = [emojis[0], emojis[1], emojis[2]];
+                    break;
+                
+                case 'mult_sub':
+                    equation = `${emojis[0]} × ${emojis[1]} - ${emojis[2]} = ${numbers[3]}`;
+                    usedEmojis = [emojis[0], emojis[1], emojis[2]];
+                    break;
+                
+                case 'div_add':
+                    equation = `${emojis[0]} ÷ ${emojis[1]} + ${emojis[2]} = ${numbers[3]}`;
+                    usedEmojis = [emojis[0], emojis[1], emojis[2]];
+                    break;
+                
+                case 'div_sub':
+                    equation = `${emojis[0]} ÷ ${emojis[1]} - ${emojis[2]} = ${numbers[3]}`;
+                    usedEmojis = [emojis[0], emojis[1], emojis[2]];
+                    break;
+            }
+            
+            equationDisplay.textContent = equation;
+        }
+        
+        // Отображение вариантов ответа
+        function displayNumberOptions(numbers) {
+            numbersGrid.innerHTML = '';
+            
+            numbers.forEach(num => {
+                const numberBox = document.createElement('div');
+                numberBox.className = 'number-box';
+                numberBox.textContent = num;
+                numberBox.addEventListener('click', () => toggleNumberSelection(num, numberBox));
+                numbersGrid.appendChild(numberBox);
+            });
+        }
+        
+        // Выбор/снятие выбора числа
+        function toggleNumberSelection(num, element) {
+            const index = selectedNumbers.indexOf(num);
+            
+            if (index === -1) {
+                // Добавляем число в выбранные
+                selectedNumbers.push(num);
+                element.classList.add('selected');
+            } else {
+                // Удаляем число из выбранных
+                selectedNumbers.splice(index, 1);
+                element.classList.remove('selected');
+            }
+            
+            // Активируем/деактивируем кнопку проверки
+            checkBtn.disabled = selectedNumbers.length === 0;
+        }
+        
+        // Проверка ответа
+        function checkAnswer() {
+            // Определяем, какие числа должны быть выбраны (все кроме последнего - это результат)
+            const correctOptions = correctNumbers.slice(0, -1);
+            
+            // Создаем копии массивов для сравнения
+            const selectedCopy = [...selectedNumbers].sort((a, b) => a - b);
+            const correctCopy = [...correctOptions].sort((a, b) => a - b);
+            
+            // Проверяем совпадение массивов
+            let isCorrect = selectedCopy.length === correctCopy.length;
+            
+            if (isCorrect) {
+                for (let i = 0; i < selectedCopy.length; i++) {
+                    if (selectedCopy[i] !== correctCopy[i]) {
+                        isCorrect = false;
+                        break;
+                    }
+                }
+            }
+            
+            // Добавляем попытку в историю
+            addToHistory(selectedNumbers, isCorrect);
+            
+            // Показываем результат
+            if (isCorrect) {
+                showMessage('Поздравляем! Вы правильно выбрали числа!', 'success');
+            } else {
+                showMessage('Попробуйте еще раз!', 'failure');
+            }
+        }
+        
+        // Добавление попытки в историю
+        function addToHistory(numbers, isCorrect) {
+            const attemptDiv = document.createElement('div');
+            attemptDiv.className = 'attempt-history';
+            
+            // Отображаем все выбранные числа, включая дубликаты
+            const numbersHTML = numbers.map(num => `<span>${num}</span>`).join('');
+            
+            attemptDiv.innerHTML = `
+                <div class="attempt-number">${gameHistory.length + 1}</div>
+                <div class="attempt-numbers">${numbersHTML}</div>
+                <div class="attempt-result">${isCorrect ? '✓ Верно' : '✗ Неверно'}</div>
+            `;
+            
+            historyContainer.prepend(attemptDiv);
+            gameHistory.unshift({numbers: [...numbers], correct: isCorrect});
+        }
+        
+        // Показать сообщение
+        function showMessage(text, type) {
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+        }
+        
+        // Вспомогательная функция для получения случайного целого числа
+        function getRandomInt(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        
+        // Функция для перемешивания массива
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+    </script>
+</body>
+</html>
