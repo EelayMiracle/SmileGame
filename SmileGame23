@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Игровое меню</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .game-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .game-btn {
+            background: #ff9800;
+            color: white;
+            padding: 15px;
+            font-size: 18px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .game-btn:hover {
+            background: #e68900;
+        }
+                   display: none;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+        }
+        .back-btn {
+            background: #e74c3c;
+            padding: 10px;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Выберите игру</h1>
+        <div class="game-menu">
+            <button class="game-btn" onclick="showGame('smileGame')">Математика со смайликами</button>
+            <button class="game-btn" onclick="showGame('secondGame')">Вторая игра</button>
+        </div>
+        <div id="smileGame" class="game-screen">
+            <h2>Математика со смайликами</h2>
+            <p>Здесь будет код вашей игры из прикрепленного файла.</p>
+            <button class="back-btn" onclick="showMenu()">Назад</button>
+        </div>
+        <div id="secondGame" class="game-screen">
+            <h2>Вторая игра</h2>
+            <p>Описание второй игры.</p>
+            <button class="back-btn" onclick="showMenu()">Назад</button>
+        </div>
+    </div>
+
+    <script>
+        function showGame(gameId) {
+            document.querySelector('.game-menu').style.display = 'none';
+            document.getElementById(gameId).style.display = 'block';
+        }
+        function showMenu() {
+            document.querySelectorAll('.game-screen').forEach(screen => screen.style.display = 'none');
+            document.querySelector('.game-menu').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
